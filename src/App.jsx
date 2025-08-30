@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [searchText, setSearchText] = useState("");
@@ -11,13 +11,13 @@ function App() {
   };
 
 
-  let resCache = useRef({})
   const fetchData = async () => {
     let key = JSON.stringify(searchText)
-    if(resCache.current[key]) {
-      setResult(resCache.current[key]);
-      console.log('return from cache', resCache)
-      return resCache.current[key];
+    let localStorageData = localStorage.getItem(key) // get from localStorage
+    if(localStorageData) {
+      setResult(JSON.parse(localStorageData));
+      console.log('return from cache', JSON.parse(localStorageData))
+      return;
     }
     // fetch data if cache is not present
     const data = await fetch(
@@ -34,8 +34,9 @@ function App() {
     //   res.push(recepies[i]);
     // }
     setResult(res);
-    resCache.current[key] = res // store in cache
-    console.log('store in cache', resCache)
+    // resCache.current[key] = res // store in cache
+    localStorage.setItem(key, JSON.stringify(res))
+    console.log('store in cache', res)
     return res;
   };
 
